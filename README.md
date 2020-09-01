@@ -6,8 +6,8 @@ The application has 2 Rest APIs
 2. Skills API
 
 
-   - People API lets a user to add/update/ delete people to the repository
-   - The API also lets a user to manage the skills recorded for the person - skill Id, skill name, skill level
+ People API lets a user to add/update/ delete people to the repository
+ The API also lets a user to manage the skills recorded for the person - skill Id, skill name, skill level
    
    To fetch the details of a people - person Id, person name and the skills recorded for the person 
     - GET request  to fetch details of all people - localhost:8079/people
@@ -21,7 +21,7 @@ The application has 2 Rest APIs
 	
 	
 	
-   - Skills API
+Skills API
    REST API built which lets a user to add / update / delete a skill.
    
     - To fetch the details of skills - skill name, skill Id and skill Level 
