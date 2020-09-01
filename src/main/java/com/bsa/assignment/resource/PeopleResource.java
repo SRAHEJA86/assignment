@@ -1,5 +1,7 @@
 package com.bsa.assignment.resource;
 
+import com.bsa.assignment.exception.PeopleNotFoundException;
+import com.bsa.assignment.exception.SkillsNotFoundException;
 import com.bsa.assignment.model.People;
 import com.bsa.assignment.model.Skills;
 import com.bsa.assignment.service.PeopleService;
@@ -23,7 +25,9 @@ public class PeopleResource {
      */
     @GetMapping("/people")
     public List<People> getAllPeople(){
-        return peopleService.getAllPeople();
+        List<People> people = peopleService.getAllPeople();
+        if(null == people) throw new PeopleNotFoundException();
+        return people;
     }
 
     /**
@@ -33,7 +37,9 @@ public class PeopleResource {
      */
     @GetMapping("/people/{personId}")
     public People getPeopleById(@PathVariable Integer personId){
-        return peopleService.getPeopleById(personId);
+        People people = peopleService.getPeopleById(personId);
+        if(null == people) throw new PeopleNotFoundException();
+        return people;
     }
 
     /**
@@ -43,7 +49,9 @@ public class PeopleResource {
      */
     @GetMapping("/people/{personId}/skills")
     public List<Skills> getSkillsForPeople(@PathVariable Integer personId){
-        return peopleService.getSkillsForPeople(personId);
+        List<Skills> skills = peopleService.getSkillsForPeople(personId);
+        if(null == skills) throw new SkillsNotFoundException();
+        return skills;
     }
 
     /**
@@ -55,7 +63,9 @@ public class PeopleResource {
     @GetMapping("/people/{personId}/skills/{skillId}")
     public Skills getDetailsForSkills(@PathVariable Integer personId,
                                       @PathVariable Integer skillId) {
-        return peopleService.getDetailsForASkill(personId, skillId);
+        Skills skills = peopleService.getDetailsForASkill(personId, skillId);
+        if(null == skills) throw new SkillsNotFoundException();
+        return skills;
     }
 
 
@@ -67,6 +77,7 @@ public class PeopleResource {
     @PutMapping("/people/{personId}")
     public People updatePeople(@PathVariable Integer personId,
                                @RequestBody People updatedPeople){
+
         return peopleService.updatePeople(personId,updatedPeople);
     }
 

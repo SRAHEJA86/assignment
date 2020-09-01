@@ -7,7 +7,6 @@ import com.bsa.assignment.service.PeopleService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,7 +35,7 @@ class PeopleResourceTest {
     MockMvc mockMvc;
 
     @MockBean
-    PeopleService peopleService;
+    PeopleService peopleServiceMock;
 
     List<People> mockPeopleList = new ArrayList<>();
 
@@ -56,7 +55,7 @@ class PeopleResourceTest {
     @Test
     void getAllPeople() throws Exception {
         String url = "/people";
-        when(peopleService.getAllPeople()).thenReturn(mockPeopleList);
+        when(peopleServiceMock.getAllPeople()).thenReturn(mockPeopleList);
         String expected = "[{\"personId\":123,\"personName\":\"Sadhana\",\"skills\":[{\"skillId\":456," +
                 "\"skillName\":\"Java\",\"skillLevel\":\"WORKING\"}," +
                 "{\"skillId\":457,\"skillName\":\"C++\",\"skillLevel\":" +
@@ -75,13 +74,10 @@ class PeopleResourceTest {
     @Test
     void updatePeople() throws Exception {
         String url = "/people/123";
-        when(peopleService.updatePeople(any(Integer.class),any(People.class)))
+        when(peopleServiceMock.updatePeople(any(Integer.class),any(People.class)))
                 .thenReturn(mockPeople);
         String expected = "";
         MvcResult result = mockMvc.perform(put(url))
-               // .andExpect(status().isOk())
-                //.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(MockMvcResultMatchers.content().json(expected))
                 .andDo(print())
                 .andReturn();
         Assertions.assertEquals(expected,result.getResponse().getContentAsString());
@@ -91,15 +87,12 @@ class PeopleResourceTest {
     @Test
     void addPeople() throws Exception {
         String url = "/people";
-        when(peopleService.addPeople(any(People.class))).thenReturn(mockPeople);
+        when(peopleServiceMock.addPeople(any(People.class))).thenReturn(mockPeople);
         mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{personId : 123,personName:\"Sadhana\",skills: [{skillId:456,skillName:\"JAVA\"," +
                         "skillLevel:\"EXPERT\"},{skillId:890,skillName:\"J2EE\",skillLevel:\"AWARENESS\"} ]}"))
                 .andDo(print());
-                //.andExpect(status().isOk());
-               // .andExpect((ResultMatcher) content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                //.andExpect(header().string("Location", "/people"));
     }
 
     @Test
@@ -109,14 +102,14 @@ class PeopleResourceTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-        verify(peopleService).deletePeople(any(Integer.class));
+        verify(peopleServiceMock).deletePeople(any(Integer.class));
 
     }
 
     @Test
     void getPeopleById() throws Exception {
         String url = "/people/123";
-        when(peopleService.getPeopleById(any(Integer.class))).thenReturn(mockPeople);
+        when(peopleServiceMock.getPeopleById(any(Integer.class))).thenReturn(mockPeople);
         String expected = "{\"personId\":123,\"personName\":\"Sadhana\",\"skills\":[{\"skillId\":456,\"skillName\":" +
                 "\"Java\",\"skillLevel\":\"WORKING\"},{\"skillId\":457,\"skillName\":\"C++\"," +
                 "\"skillLevel\":\"AWARENESS\"}]}";
@@ -133,7 +126,7 @@ class PeopleResourceTest {
     @Test
     void getSkillsForPeople() throws Exception {
         String url = "/people/123/skills";
-        when(peopleService.getSkillsForPeople(any(Integer.class))).thenReturn(mockPeople.getSkills());
+        when(peopleServiceMock.getSkillsForPeople(any(Integer.class))).thenReturn(mockPeople.getSkills());
         String expected = "[{\"skillId\":456,\"skillName\":" +
                 "\"Java\",\"skillLevel\":\"WORKING\"},{\"skillId\":457,\"skillName\":\"C++\"," +
                 "\"skillLevel\":\"AWARENESS\"}]";
@@ -150,7 +143,7 @@ class PeopleResourceTest {
     @Test
     void getDetailsForSkills() throws Exception {
         String url = "/people/123/skills/456";
-        when(peopleService.getDetailsForASkill(any(Integer.class),any(Integer.class)))
+        when(peopleServiceMock.getDetailsForASkill(any(Integer.class),any(Integer.class)))
                 .thenReturn(mockPeople.getSkills().get(0));
         String expected = "{\"skillId\":456,\"skillName\":\"Java\",\"skillLevel\":\"WORKING\"}";
         MvcResult result = mockMvc.perform(get(url))
@@ -160,5 +153,23 @@ class PeopleResourceTest {
                 .andDo(print())
                 .andReturn();
         Assertions.assertEquals(expected,result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void should_Return404_When_PeopleNotFound() throws Exception {
+        /* setup mock */
+        when(peopleServiceMock.getPeopleById(678)).thenReturn(null);
+        mockMvc.perform(get("/people/678")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void should_Return404_When_SkillsNotFound() throws Exception {
+        /* setup mock */
+        when(peopleServiceMock.getSkillsForPeople(678)).thenReturn(null);
+        mockMvc.perform(get("/people/678/skills")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

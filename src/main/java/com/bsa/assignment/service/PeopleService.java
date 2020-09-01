@@ -3,12 +3,10 @@ package com.bsa.assignment.service;
 import com.bsa.assignment.model.People;
 import com.bsa.assignment.model.Skills;
 import com.bsa.assignment.repository.PeopleRepository;
-import com.bsa.assignment.repository.SkillsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +32,7 @@ public class PeopleService {
      * @return the updated people
      */
     public People updatePeople(Integer personId,People updatedPeople) {
-        return peopleRepository.save(updatedPeople);
+         return peopleRepository.save(updatedPeople);
     }
 
     /**
@@ -43,7 +41,7 @@ public class PeopleService {
      * @return People added to the repository
      */
     public People addPeople(People newPeople) {
-        return peopleRepository.save(newPeople);
+        return peopleRepository.save(newPeople) ;
     }
 
     /**
@@ -66,15 +64,6 @@ public class PeopleService {
             return null;
         }
         return peopleRepository.findByPersonId(personId).getSkills();
-    }
-
-    /**
-     *
-     * @param personId person Id
-     * @return People
-     */
-    public Optional<People> retrievePeople(Integer personId) {
-        return peopleRepository.findById(personId);
     }
 
     /**

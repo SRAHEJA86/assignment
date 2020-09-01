@@ -1,13 +1,11 @@
 package com.bsa.assignment.resource;
 
 import com.bsa.assignment.enums.SkillLevel;
-import com.bsa.assignment.model.People;
 import com.bsa.assignment.model.Skills;
 import com.bsa.assignment.service.SkillsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,12 +16,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +32,7 @@ class SkillsResourceTest {
     MockMvc mockMvc;
 
     @MockBean
-    SkillsService skillsService;
+    SkillsService skillsServiceMock;
 
     List<Skills> mockSkillsList = new ArrayList<>();
 
@@ -53,7 +48,7 @@ class SkillsResourceTest {
     @Test
     void getAllSkills() throws Exception {
         String url = "/skills";
-        when(skillsService.getAllSkills()).thenReturn(mockSkillsList);
+        when(skillsServiceMock.getAllSkills()).thenReturn(mockSkillsList);
         String expected = "[{\"skillId\":123,\"skillName\":\"JAVA\",\"skillLevel\":\"AWARENESS\"}," +
                 "{\"skillId\":456,\"skillName\":\"J2EE\",\"skillLevel\":\"WORKING\"}]";
         MvcResult result = mockMvc.perform(get(url))
@@ -68,7 +63,7 @@ class SkillsResourceTest {
     @Test
     void getSkillBySkillId() throws Exception {
         String url = "/skills/123";
-        when(skillsService.getSkillBySkillId(any(Integer.class))).thenReturn(mockSkills);
+        when(skillsServiceMock.getSkillBySkillId(any(Integer.class))).thenReturn(mockSkills);
         String expected = "{\"skillId\":123,\"skillName\":\"JAVA\",\"skillLevel\":\"AWARENESS\"}";
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
@@ -82,7 +77,7 @@ class SkillsResourceTest {
     @Test
     void addSkill() throws Exception {
         String url = "/skills";
-        when(skillsService.addSkill(any(Skills.class))).thenReturn(mockSkills);
+        when(skillsServiceMock.addSkill(any(Skills.class))).thenReturn(mockSkills);
         mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{skillId:456,skillName:\"JAVA\",\"skillLevel:\"EXPERT\"}"))
@@ -95,7 +90,7 @@ class SkillsResourceTest {
     @Test
     void updateSkill() throws Exception {
         String url = "/skills/123";
-        when(skillsService.updateSkill(any(Integer.class),any(Skills.class)))
+        when(skillsServiceMock.updateSkill(any(Integer.class),any(Skills.class)))
                 .thenReturn(mockSkills);
         String expected = "";
         MvcResult result = mockMvc.perform(put(url))
@@ -114,6 +109,6 @@ class SkillsResourceTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-        verify(skillsService).deleteSkill(any(Integer.class));
+        verify(skillsServiceMock).deleteSkill(any(Integer.class));
     }
 }
