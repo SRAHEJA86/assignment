@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface SkillsRepository extends CrudRepository<Skills,Integer> {
-   public Skills findBySkillName(String skillName);
-   public void deleteBySkillName(String skillName);
+   Skills findBySkillName(String skillName);
+   void deleteBySkillName(String skillName);
+   Skills findBySkillId(Integer skillId);
 
 }

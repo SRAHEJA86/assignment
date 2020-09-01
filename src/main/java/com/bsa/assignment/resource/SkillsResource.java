@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController("/skills")
+@RestController
 public class SkillsResource {
 
     @Autowired
@@ -16,49 +16,48 @@ public class SkillsResource {
 
     /**
      *Gets the list of all skills
-     * @return
+     * @return returns list of skills
      */
-    @GetMapping
-    public List<Skills> getAllSkills() { return skillsService.getAllSkills();};
+    @GetMapping("/skills")
+    public List<Skills> getAllSkills() { return skillsService.getAllSkills();}
 
     /**
      * Gets a skill based on skill id
-     * @param skillId
-     * @return
+     * @param skillId skillId
+     * @return skills
      */
-    @GetMapping("{skillId}")
-    public Optional<Skills> getSkillBySkillId(@PathVariable("skillId") Integer skillId){
+    @GetMapping("/skills/{skillId}")
+    public Skills getSkillBySkillId(@PathVariable("skillId") Integer skillId){
         return skillsService.getSkillBySkillId(skillId);
     }
 
     /**
      *Creates a skill in the repository
-     * @param newSkill
-     * @return
+     * @param newSkill new skill to be added
+     * @return skills added to the repo
      */
-    @PostMapping("/skill")
+    @PostMapping("/skills")
     public Skills addSkill(@RequestBody Skills newSkill){
         return skillsService.addSkill(newSkill);
     }
 
     /**
      *Updates a skill
-     * @param updatedSkill
-     * @return
+     * @param updatedSkill skill to be updated
+     * @return skills that has been updated
      */
-    @PutMapping("/skill")
-    public Skills updateSkill(@RequestBody Skills updatedSkill){
-        return skillsService.updateSkill(updatedSkill);
+    @PutMapping("/skills/{skillId}")
+    public Skills updateSkill(@PathVariable Integer skillId,@RequestBody Skills updatedSkill){
+        return skillsService.updateSkill(skillId,updatedSkill);
     }
 
     /**
      * Deletes a skill from the repository
-     * @param deleteSkill
-     * @return
+     * @param skillId skill Id to be deleted
      */
-    @DeleteMapping
-    public void deleteSkill(@RequestBody Skills deleteSkill){
-        skillsService.deleteSkill(deleteSkill);
+    @DeleteMapping("/skills/{skillId}")
+    public void deleteSkill(@PathVariable Integer skillId){
+        skillsService.deleteSkill(skillId);
     }
 
 

@@ -1,5 +1,8 @@
 package com.bsa.assignment.model;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +33,12 @@ public class People {
 
     private String personName;
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.LAZY)
+    @NotFound(
+            action = NotFoundAction.IGNORE)
     @JoinTable(name = "PEOPLE_SKILLS",joinColumns = @JoinColumn (name="PERSON_ID"),
             inverseJoinColumns = @JoinColumn(name="SKILL_ID"))
-    private List<Skills> skills = new ArrayList<Skills>();
+    private List<Skills> skills = new ArrayList<>();
 
     public Integer getPersonId() {
         return personId;

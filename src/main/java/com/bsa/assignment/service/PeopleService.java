@@ -17,9 +17,6 @@ public class PeopleService {
     @Autowired
     PeopleRepository peopleRepository;
 
-    @Autowired
-    SkillsRepository skillsRepository;
-
     List<People> peopleList ;
 
     /**
@@ -51,10 +48,10 @@ public class PeopleService {
 
     /**
      * Deletes people from the repository
-     * @param people people to be deleted
+     * @param personId people to be deleted
      */
-    public void deletePeople(Integer people) {
-        peopleRepository.deleteById(people);
+    public void deletePeople(Integer personId) {
+        peopleRepository.deleteById(personId);
     }
 
     /**
@@ -62,8 +59,8 @@ public class PeopleService {
      * @param personId personId
      * @return returns skills recorded for people
      */
-    public List<Skills> retrieveSkillsForPeople(Integer personId) {
-        Optional<People> people = retrievePeople(personId);
+    public List<Skills> getSkillsForPeople(Integer personId) {
+        People people = getPeopleById(personId);
 
         if (people == null) {
             return null;
@@ -73,8 +70,8 @@ public class PeopleService {
 
     /**
      *
-     * @param personId
-     * @return
+     * @param personId person Id
+     * @return People
      */
     public Optional<People> retrievePeople(Integer personId) {
         return peopleRepository.findById(personId);
@@ -86,8 +83,8 @@ public class PeopleService {
      * @param skillId skillId
      * @return skills
      */
-    public Skills retrieveSkill(Integer personId, Integer skillId) {
-        Optional<People> people = retrievePeople(personId);
+    public Skills getDetailsForASkill(Integer personId, Integer skillId) {
+        People people = getPeopleById(personId);
 
         if (people == null) {
             return null;
@@ -102,9 +99,9 @@ public class PeopleService {
 
     /**
      *
-     * @param personId
-     * @param newSkills
-     * @return
+     * @param personId person Id
+     * @param newSkills new skills to be added
+     * @return skills added
      */
     public Skills addSkillsForAPerson(String personId, Skills newSkills) {
         return null;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SkillsService {
@@ -35,16 +34,16 @@ public class SkillsService {
      * @param updatedSkill skill to be updated
      * @return Skill that has been updated
      */
-    public Skills updateSkill(Skills updatedSkill) {
+    public Skills updateSkill(Integer skillId,Skills updatedSkill) {
         return skillsRepository.save(updatedSkill);
     }
 
     /**
      *Deletes a skill from the repository
-     * @param deleteSkill skill to be deleted
+     * @param skillId skill to be deleted
      */
-    public void deleteSkill(Skills deleteSkill) {
-        skillsRepository.delete(deleteSkill);
+    public void deleteSkill(Integer skillId) {
+        skillsRepository.deleteById(skillId);
     }
 
     /**
@@ -52,7 +51,7 @@ public class SkillsService {
      * @param skillId skillId to be found
      * @return Skill
      */
-    public Optional<Skills> getSkillBySkillId(Integer skillId) {
-        return skillsRepository.findById(skillId);
+    public Skills getSkillBySkillId(Integer skillId) {
+        return skillsRepository.findBySkillId(skillId);
     }
 }

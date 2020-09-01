@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,9 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static com.bsa.assignment.enums.SkillLevel.AWARENESS;
+import static com.bsa.assignment.enums.SkillLevel.EXPERT;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = PeopleResource.class)
 @Import(PeopleResource.class)
@@ -37,22 +38,25 @@ class PeopleResourceTest {
     @MockBean
     PeopleService peopleService;
 
-    List<People> mockPeople = new ArrayList<People>();
+    List<People> mockPeopleList = new ArrayList<>();
+
+    People mockPeople;
 
     @BeforeEach
     void setUp(){
-        mockPeople.add(new People(123,"Sadhana",
+        mockPeople = new People(123,"Sadhana",
                 Arrays.asList(new Skills(456,"Java", SkillLevel.WORKING),
-                new Skills(457,"C++", SkillLevel.AWARENESS))));
-        mockPeople.add(new People(124,"Ayaansh",
-                Arrays.asList(new Skills(458,"J2EE", SkillLevel.EXPERT),
+                        new Skills(457,"C++", AWARENESS)));
+        mockPeopleList.add(mockPeople);
+        mockPeopleList.add(new People(124,"Ayaansh",
+                Arrays.asList(new Skills(458,"J2EE", EXPERT),
                         new Skills(459,"Python", SkillLevel.PRACTITIONER))));
     }
 
     @Test
     void getAllPeople() throws Exception {
         String url = "/people";
-        Mockito.when(peopleService.getAllPeople()).thenReturn(mockPeople);
+        when(peopleService.getAllPeople()).thenReturn(mockPeopleList);
         String expected = "[{\"personId\":123,\"personName\":\"Sadhana\",\"skills\":[{\"skillId\":456," +
                 "\"skillName\":\"Java\",\"skillLevel\":\"WORKING\"}," +
                 "{\"skillId\":457,\"skillName\":\"C++\",\"skillLevel\":" +
@@ -60,7 +64,7 @@ class PeopleResourceTest {
                 "\"skills\":[{\"skillId\":458,\"skillName\":\"J2EE\",\"skillLevel\":" +
                 "\"EXPERT\"},{\"skillId\":459,\"skillName\":\"Python\",\"skillLevel\":\"PRACTITIONER\"}]}]";
         MvcResult result = mockMvc.perform(get(url))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().json(expected))
                 .andDo(print())
@@ -69,26 +73,92 @@ class PeopleResourceTest {
     }
 
     @Test
-    void updatePeople() {
-        Mockito.when(peopleService.addPeople(Mockito.any(People.class))).
-                thenReturn(mockPeople.get(0));
+    void updatePeople() throws Exception {
+        String url = "/people/123";
+        when(peopleService.updatePeople(any(Integer.class),any(People.class)))
+                .thenReturn(mockPeople);
+        String expected = "";
+        MvcResult result = mockMvc.perform(put(url))
+               // .andExpect(status().isOk())
+                //.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                //.andExpect(MockMvcResultMatchers.content().json(expected))
+                .andDo(print())
+                .andReturn();
+        Assertions.assertEquals(expected,result.getResponse().getContentAsString());
+
     }
 
     @Test
     void addPeople() throws Exception {
         String url = "/people";
-        Mockito.when(peopleService.addPeople(Mockito.any(People.class)))
-                .thenReturn(mockPeople.get(0));
-        MvcResult result = mockMvc.perform(post(url))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        when(peopleService.addPeople(any(People.class))).thenReturn(mockPeople);
+        mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{personId : 123,personName:\"Sadhana\",skills: [{skillId:456,skillName:\"JAVA\"," +
+                        "skillLevel:\"EXPERT\"},{skillId:890,skillName:\"J2EE\",skillLevel:\"AWARENESS\"} ]}"))
+                .andDo(print());
+                //.andExpect(status().isOk());
+               // .andExpect((ResultMatcher) content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                //.andExpect(header().string("Location", "/people"));
     }
 
     @Test
-    void deletePeople() {
+    void deletePeople() throws Exception {
+        String url = "/people/123";
+        mockMvc.perform(delete(url))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+        verify(peopleService).deletePeople(any(Integer.class));
+
+    }
+
+    @Test
+    void getPeopleById() throws Exception {
+        String url = "/people/123";
+        when(peopleService.getPeopleById(any(Integer.class))).thenReturn(mockPeople);
+        String expected = "{\"personId\":123,\"personName\":\"Sadhana\",\"skills\":[{\"skillId\":456,\"skillName\":" +
+                "\"Java\",\"skillLevel\":\"WORKING\"},{\"skillId\":457,\"skillName\":\"C++\"," +
+                "\"skillLevel\":\"AWARENESS\"}]}";
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(expected))
+                .andDo(print())
+                .andReturn();
+        Assertions.assertEquals(expected,result.getResponse().getContentAsString());
+
+    }
+
+    @Test
+    void getSkillsForPeople() throws Exception {
+        String url = "/people/123/skills";
+        when(peopleService.getSkillsForPeople(any(Integer.class))).thenReturn(mockPeople.getSkills());
+        String expected = "[{\"skillId\":456,\"skillName\":" +
+                "\"Java\",\"skillLevel\":\"WORKING\"},{\"skillId\":457,\"skillName\":\"C++\"," +
+                "\"skillLevel\":\"AWARENESS\"}]";
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(expected))
+                .andDo(print())
+                .andReturn();
+        Assertions.assertEquals(expected,result.getResponse().getContentAsString());
+
+    }
+
+    @Test
+    void getDetailsForSkills() throws Exception {
+        String url = "/people/123/skills/456";
+        when(peopleService.getDetailsForASkill(any(Integer.class),any(Integer.class)))
+                .thenReturn(mockPeople.getSkills().get(0));
+        String expected = "{\"skillId\":456,\"skillName\":\"Java\",\"skillLevel\":\"WORKING\"}";
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(expected))
+                .andDo(print())
+                .andReturn();
+        Assertions.assertEquals(expected,result.getResponse().getContentAsString());
     }
 }

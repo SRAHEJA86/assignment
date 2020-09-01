@@ -27,6 +27,39 @@ public class PeopleResource {
     }
 
     /**
+     * Returns People based on personId
+     * @param personId person Id
+     * @return People
+     */
+    @GetMapping("/people/{personId}")
+    public People getPeopleById(@PathVariable Integer personId){
+        return peopleService.getPeopleById(personId);
+    }
+
+    /**
+     *Returns list of skills associated with a person
+     * @param personId person Id
+     * @return list of skills
+     */
+    @GetMapping("/people/{personId}/skills")
+    public List<Skills> getSkillsForPeople(@PathVariable Integer personId){
+        return peopleService.getSkillsForPeople(personId);
+    }
+
+    /**
+     *Return Skill
+     * @param personId person Id
+     * @param skillId skill Id
+     * @return returns a specific associated with a person
+     */
+    @GetMapping("/people/{personId}/skills/{skillId}")
+    public Skills getDetailsForSkills(@PathVariable Integer personId,
+                                      @PathVariable Integer skillId) {
+        return peopleService.getDetailsForASkill(personId, skillId);
+    }
+
+
+    /**
      *Updates people in the repository
      * @param updatedPeople people to be updated
      * @return Updated people
@@ -44,8 +77,8 @@ public class PeopleResource {
      */
     @PostMapping("/people")
     public People addPeople(@RequestBody People newPeople){
+        System.out.print("I am being called");
         return peopleService.addPeople(newPeople);
-
     }
 
     /**
@@ -57,47 +90,16 @@ public class PeopleResource {
         peopleService.deletePeople(personId);
    }
 
-    /**
-     *Returns list of skills associated with a person
-     * @param personId
-     * @return
-     */
-   @GetMapping("/{personId}/skills")
-    public List<Skills> retrieveSkillsForPeople(@PathVariable Integer personId){
-       return peopleService.retrieveSkillsForPeople(personId);
-   }
-
-    /**
-     * Returns People based on personId
-     * @param personId
-     * @return People
-     */
-    @GetMapping("/people/{personId}")
-    public People getPeopleById(@PathVariable Integer personId){
-        return peopleService.getPeopleById(personId);
-    }
-
-    /**
-     *Return Skill
-     * @param personId
-     * @param skillId
-     * @return returns a specific associated with a person
-     */
-    @GetMapping("/people/{personId}/skills/{skillId}")
-    public Skills retrieveDetailsForSkills(@PathVariable Integer personId,
-                                           @PathVariable Integer skillId) {
-        return peopleService.retrieveSkill(personId, skillId);
-    }
 
     /**
      *
-     * @param personId
-     * @param newSkills
+     * @param personId person Id
+     * @param newSkills new skills to be added
      * @return ResponseEntity
      */
 
     @PostMapping("/people/{personId}/skills")
-    public ResponseEntity<Void> registerStudentForCourse(
+    public ResponseEntity<Void> registerSkillsForPeople(
             @PathVariable String personId, @RequestBody Skills newSkills) {
 
         Skills skills = peopleService.addSkillsForAPerson(personId, newSkills);
@@ -106,7 +108,7 @@ public class PeopleResource {
             return ResponseEntity.noContent().build();
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
-                "/{personId}").buildAndExpand(skills.getSkillId()).toUri();
+                "/people/{personId}/skills").buildAndExpand(skills.getSkillId()).toUri();
 
         return ResponseEntity.created(location).build();
     }
