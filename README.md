@@ -11,13 +11,13 @@ The application has 2 Rest APIs
    
    To fetch the details of a people - person Id, person name and the skills recorded for the person 
     - GET request  to fetch details of all people - localhost:8079/people
-	- GET request  to fetch details of a specific person - localhost:8079/people/personId   
-	- People can be added using a POST request to the URL - localhost:8079/people
-    - People/person and any field associated with that person (inlcuding skills)can be updated my making a PUT request to the URL- localhost:8079/people/personId
+    - GET request  to fetch details of a specific person - localhost:8079/people/personId   
+    - People can be added using a POST request to the URL - localhost:8079/people
+    - People/person and any field associated with that person (inlcuding skills)can be updated my making a PUT request to the URL-  localhost:8079/people/personId
     - People can be deleted by making a DELETE request to the URL - localhost:8079/people/personId
-	- GET request  to fetch details of skills recorded for a person - localhost:8079/people/personId/skills
-	- GET request to fetch a specific skill recorded for a person - localhost:8079/people/personId/skills/skillId
-	- Skills can be recorded for a person using a POST request to the URL - localhost:8079/people/personId/skills
+    - GET request  to fetch details of skills recorded for a person - localhost:8079/people/personId/skills
+    - GET request to fetch a specific skill recorded for a person - localhost:8079/people/personId/skills/skillId
+    - Skills can be recorded for a person using a POST request to the URL - localhost:8079/people/personId/skills
 	
 	
 	
